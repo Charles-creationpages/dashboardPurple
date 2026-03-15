@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mon Espace — Charles</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --beige: #E8DDD0;
+  --taupe: #A8896C;
+  --brown: #7D6249;
+  --brown-dark: #5C4535;
+  --bg: #F2EDE6;
+  --white: #FDFAF7;
+  --text: #2C2018;
+  --muted: #9E8E80;
+  --border: #DDD3C7;
+  --success: #6B8F71;
+  --warning: #C4935A;
+  --card-shadow: 0 2px 12px rgba(125,98,73,0.08);
+  --card-shadow-hover: 0 8px 28px rgba(125,98,73,0.14);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(242,237,230,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center;
+  height: 52px;
+}
+.nav-brand { font-family: 'Lora', serif; font-size: 15px; color: var(--brown); margin-right: auto; font-weight: 500; }
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab {
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all 0.2s; border: none; background: none; white-space: nowrap;
+}
+.nav-tab:hover { color: var(--brown); background: var(--beige); }
+.nav-tab.active { color: var(--white); background: var(--brown); }
+.view { display: none; padding: 28px 24px 60px; max-width: 960px; margin: 0 auto; }
+.view.active { display: block; animation: fadeUp 0.3s ease forwards; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.dash-header { margin-bottom: 28px; }
+.dash-date { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--taupe); margin-bottom: 6px; }
+.dash-title { font-family: 'Lora', serif; font-size: 30px; font-weight: 400; color: var(--text); margin-bottom: 2px; }
+.dash-sub { font-size: 13px; color: var(--muted); font-weight: 300; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; margin-top: 28px; }
+.section-title { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+.kpi-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.kpi-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s; cursor: default;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
+.kpi-accent { position: absolute; top:0; left:0; right:0; height:3px; background:var(--taupe); border-radius:12px 12px 0 0; }
+.kpi-accent.green { background: var(--success); }
+.kpi-accent.warn { background: var(--warning); }
+.kpi-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.kpi-value { font-family: 'Lora', serif; font-size: 26px; font-weight: 500; color: var(--brown); line-height: 1; margin-bottom: 3px; }
+.kpi-value span { font-size: 13px; color: var(--muted); font-weight: 300; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.progress-bar { height: 4px; background: var(--beige); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 99px; background: var(--taupe); transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+.progress-fill.green { background: var(--success); }
+.progress-fill.warn { background: var(--warning); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: var(--card-shadow); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--text); letter-spacing: 0.02em; display: flex; align-items: center; gap: 6px; }
+.badge { font-size: 10px; font-weight: 500; background: var(--beige); color: var(--brown); padding: 2px 8px; border-radius: 99px; }
+.badge.green { background: #E8F0EB; color: var(--success); }
+.todo-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--beige); cursor: pointer; transition: opacity 0.6s ease; user-select: none; }
+.todo-item:last-child { border-bottom: none; padding-bottom: 0; }
+.todo-item:hover { opacity: 0.75; }
+.todo-item.fading { opacity: 0; }
+.todo-check { width: 17px; height: 17px; border: 1.5px solid var(--border); border-radius: 5px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; transition: all 0.15s; }
+.todo-check.done { background: var(--brown); border-color: var(--brown); }
+.todo-text { font-size: 13px; flex: 1; transition: all 0.2s; }
+.todo-text.done { color: var(--muted); text-decoration: line-through; }
+.todo-cat { font-size: 10px; padding: 2px 7px; border-radius: 99px; background: var(--bg); color: var(--muted); white-space: nowrap; }
+.todo-add { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+.todo-add input { flex: 1; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; }
+.todo-add input::placeholder { color: var(--muted); }
+.todo-add button { background: var(--brown); color: white; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; transition: background 0.15s; }
+.todo-add button:hover { background: var(--brown-dark); }
+.habit-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--beige); }
+.habit-row:last-child { border-bottom: none; }
+.habit-name { font-size: 12px; color: var(--text); width: 100px; flex-shrink: 0; font-weight: 500; }
+.habit-days { display: flex; gap: 4px; flex: 1; }
+.day-btn { width: 30px; height: 30px; border-radius: 7px; background: var(--bg); border: 1.5px solid transparent; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em; }
+.day-btn:hover { border-color: var(--taupe); color: var(--taupe); }
+.day-btn.done { background: var(--beige); color: var(--brown); border-color: var(--taupe); }
+.day-btn.today { border-color: var(--brown); color: var(--brown); font-weight: 700; }
+.day-btn.done.today { background: var(--brown); color: white; border-color: var(--brown); }
+.habit-score { font-size: 10px; color: var(--muted); width: 28px; text-align: right; flex-shrink: 0; }
+.monthly-card { background: var(--beige); border-radius: 12px; padding: 18px; text-align: center; border: 1px solid var(--border); }
+.monthly-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brown); margin-bottom: 8px; font-weight: 500; }
+.monthly-value { font-family: 'Lora', serif; font-size: 32px; color: var(--brown); line-height: 1; }
+.monthly-value span { font-size: 16px; opacity: 0.5; }
+.monthly-sub { font-size: 11px; color: var(--taupe); margin-top: 6px; }
+.monthly-bar { margin-top: 10px; height: 4px; background: rgba(125,98,73,0.2); border-radius: 99px; overflow: hidden; }
+.monthly-bar-fill { height: 100%; background: var(--brown); border-radius: 99px; transition: width 0.8s ease; }
+.obj-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 20px; }
+.obj-card-header { background: var(--brown); padding: 14px 20px; color: white; display: flex; align-items: center; justify-content: space-between; }
+.obj-card-title { font-size: 13px; font-weight: 600; }
+.obj-card-sub { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+.obj-item { display: flex; align-items: center; padding: 13px 20px; border-bottom: 1px solid var(--beige); gap: 14px; }
+.obj-item:last-child { border-bottom: none; }
+.obj-name { flex: 1; font-size: 13px; font-weight: 500; }
+.obj-target { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.obj-counter { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.counter-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); color: var(--brown); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-weight: 600; line-height: 1; }
+.counter-btn:hover { background: var(--beige); border-color: var(--taupe); }
+.counter-btn:active { transform: scale(0.9); }
+.counter-display { font-family: 'Lora', serif; font-size: 20px; color: var(--brown); min-width: 26px; text-align: center; font-weight: 500; }
+.obj-progress-wrap { flex-shrink: 0; width: 80px; }
+.obj-pct { font-size: 10px; color: var(--muted); text-align: right; margin-bottom: 4px; }
+.rapport-block { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 14px; }
+.rapport-header { padding: 14px 20px; background: var(--beige); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.rapport-title { font-size: 13px; font-weight: 600; color: var(--brown); }
+.rapport-score { font-family: 'Lora', serif; font-size: 22px; color: var(--brown); }
+.rapport-score span { font-size: 12px; color: var(--muted); }
+.rapport-row { display: flex; align-items: center; padding: 9px 20px; gap: 12px; border-bottom: 1px solid var(--beige); }
+.rapport-row:last-child { border-bottom: none; }
+.rapport-name { flex: 1; font-size: 12px; }
+.rapport-val { font-size: 12px; font-weight: 600; color: var(--brown); min-width: 60px; text-align: right; }
+.rapport-bar { width: 80px; height: 4px; background: var(--beige); border-radius: 99px; overflow: hidden; }
+.rapport-fill { height: 100%; border-radius: 99px; background: var(--taupe); }
+.rapport-fill.over { background: var(--success); }
+.rapport-fill.under { background: var(--warning); }
+.settings-section { margin-bottom: 28px; }
+.settings-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--brown); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.setting-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--beige); }
+.setting-row:last-child { border-bottom: none; }
+.setting-label-text { font-size: 13px; font-weight: 500; }
+.setting-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.num-input { width: 64px; border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--brown); text-align: center; background: var(--white); outline: none; transition: border-color 0.15s; }
+.num-input:focus { border-color: var(--taupe); }
+.save-btn { background: var(--brown); color: white; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.save-btn:hover { background: var(--brown-dark); transform: translateY(-1px); }
+.save-confirm { font-size: 12px; color: var(--success); margin-left: 12px; opacity: 0; transition: opacity 0.3s; }
+.save-confirm.show { opacity: 1; }
+.habit-setting-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--beige); gap: 10px; }
+.habit-setting-row:last-child { border-bottom: none; }
+.habit-input { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); background: var(--white); outline: none; transition: border-color 0.15s; }
+.habit-input:focus { border-color: var(--taupe); }
+.habit-delete { color: var(--muted); cursor: pointer; font-size: 18px; transition: color 0.15s; background: none; border: none; padding: 4px 6px; }
+.habit-delete:hover { color: #C0392B; }
+.habit-add-row { display: flex; gap: 8px; margin-top: 14px; }
+.habit-add-row input { flex: 1; border: 1.5px dashed var(--border); border-radius: 8px; padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); background: var(--white); outline: none; }
+.habit-add-row input:focus { border-color: var(--taupe); border-style: solid; }
+.habit-add-row button { background: var(--taupe); color: white; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+.habit-add-row button:hover { background: var(--brown); }
+.reset-btn { background: none; border: 1.5px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 11px; color: rgba(255,255,255,0.8); cursor: pointer; transition: all 0.15s; }
+.reset-btn:hover { background: rgba(255,255,255,0.15); }
+.priorite-block { margin: 10px 0 4px; }
+.priorite-item { display:flex; align-items:flex-start; gap:10px; padding:10px 14px; border-radius:8px; margin-bottom:6px; font-size:12px; line-height:1.5; }
+.priorite-item.warn { background:#FEF6EC; border:1px solid #F0D4A8; }
+.priorite-item.ok { background:#EEF4EF; border:1px solid #B8D4BC; }
+.priorite-item.great { background:#E8F0EB; border:1px solid #A8C8AE; }
+.priorite-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.priorite-text strong { color:var(--brown); }
+.save-week-btn { display:flex; align-items:center; gap:8px; background:var(--brown); color:white; border:none; border-radius:10px; padding:11px 20px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; margin-top:16px; }
+.save-week-btn:hover { background:var(--brown-dark); transform:translateY(-1px); }
+.save-week-btn .icon { font-size:16px; }
+.analyse-block { background:var(--white); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:14px; }
+.analyse-header { padding:12px 18px; background:var(--brown); color:white; display:flex; justify-content:space-between; align-items:center; }
+.analyse-header-title { font-size:13px; font-weight:600; }
+.analyse-header-week { font-size:11px; opacity:0.75; }
+.analyse-body { padding:4px 0; }
+.analyse-item { display:flex; align-items:flex-start; gap:12px; padding:11px 18px; border-bottom:1px solid var(--beige); }
+.analyse-item:last-child { border-bottom:none; }
+.analyse-item-icon { font-size:18px; flex-shrink:0; }
+.analyse-item-text { font-size:13px; line-height:1.5; }
+.analyse-item-text strong { color:var(--brown); }
+.analyse-item.positif .analyse-item-text { color:var(--success); }
+
+.hist-row { background:var(--white); border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:8px; }
+.hist-row-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.hist-week-name { font-size:12px; font-weight:600; color:var(--brown); }
+.hist-score-badge { font-family:'Lora',serif; font-size:18px; color:var(--brown); }
+.hist-bars { display:flex; flex-direction:column; gap:6px; }
+.hist-bar-row { display:flex; align-items:center; gap:8px; }
+.hist-bar-label { font-size:11px; color:var(--muted); width:110px; flex-shrink:0; }
+.hist-bar-wrap { flex:1; height:6px; background:var(--beige); border-radius:99px; overflow:hidden; }
+.hist-bar-fill { height:100%; border-radius:99px; background:var(--taupe); transition:width 0.6s ease; }
+.hist-bar-fill.green { background:var(--success); }
+.hist-bar-pct { font-size:11px; color:var(--muted); width:32px; text-align:right; flex-shrink:0; }
+.sport-redirect-btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:16px; background:var(--brown); color:white; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; text-decoration:none; margin-bottom:16px; transition:all 0.2s; letter-spacing:0.02em; }
+.sport-redirect-btn:hover { background:#6a5040; transform:translateY(-1px); box-shadow:0 4px 14px rgba(125,98,73,0.3); }
+.bilan-fiche { background:var(--white); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:14px; box-shadow:var(--card-shadow); }
+.bilan-fiche-header { background:var(--brown); color:white; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+.bilan-fiche-title { font-family:'Lora',serif; font-size:16px; font-weight:400; }
+.bilan-fiche-date { font-size:11px; opacity:0.7; margin-top:3px; }
+.bilan-fiche-score { font-family:'Lora',serif; font-size:28px; }
+.bilan-fiche-score span { font-size:13px; opacity:0.7; }
+.bilan-fiche-body { padding:18px 20px; }
+.bilan-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.bilan-stat { background:var(--bg); border-radius:10px; padding:12px 14px; text-align:center; }
+.bilan-stat-label { font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; }
+.bilan-stat-val { font-family:'Lora',serif; font-size:24px; color:var(--brown); line-height:1; }
+.bilan-stat-val span { font-size:12px; color:var(--muted); }
+.bilan-stat-pct { font-size:11px; margin-top:4px; }
+.bilan-stat-pct.green { color:var(--success); }
+.bilan-stat-pct.warn { color:var(--warning); }
+.bilan-analyse { margin-top:14px; padding-top:14px; border-top:1px solid var(--beige); }
+.bilan-analyse-title { font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-bottom:10px; }
+.bilan-analyse-item { display:flex; gap:10px; padding:7px 0; border-bottom:1px solid var(--beige); font-size:12px; line-height:1.5; }
+.bilan-analyse-item:last-child { border-bottom:none; }
+.bilan-empty { text-align:center; padding:40px 20px; color:var(--muted); font-size:13px; }
+.pdf-btn { display:inline-flex; align-items:center; gap:7px; background:transparent; border:1.5px solid rgba(255,255,255,0.5); color:white; border-radius:8px; padding:6px 14px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; }
+.pdf-btn:hover { background:rgba(255,255,255,0.15); }
+
+@media print {
+  nav, .section-header, #view-dashboard, #view-objectifs, #view-habitudes,
+  #view-rapport, #view-stats, #view-settings, .save-week-btn,
+  #bilanPreview, .card:has(#bilanPreview) { display:none !important; }
+  #view-bilans { display:block !important; }
+  .bilan-fiche { break-inside:avoid; box-shadow:none !important; border:1px solid #ccc !important; margin-bottom:30px; }
+  .bilan-fiche-header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .bilan-stat { -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#F2EDE6 !important; }
+  .pdf-btn, .section-header { display:none !important; }
+  body { background:white; }
+  .print-only-title { display:block !important; font-family:'Lora',serif; font-size:13px; color:#9E8E80; margin-bottom:20px; }
+}
+.print-only-title { display:none; }
+@media(max-width:640px){ .bilan-grid{grid-template-columns:repeat(2,1fr);} }
+
+/* ── SPORT ── */
+.sport-header { background:var(--brown); border-radius:14px; padding:20px 22px; margin-bottom:16px; color:white; display:flex; justify-content:space-between; align-items:center; }
+.sport-header-left .sport-seance-label { font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px; }
+.sport-header-left .sport-seance-name { font-family:'Lora',serif; font-size:22px; }
+.sport-header-left .sport-seance-sub { font-size:12px; opacity:0.65; margin-top:4px; }
+.sport-header-right { text-align:right; }
+.sport-seance-badge { font-family:'Lora',serif; font-size:36px; line-height:1; }
+.sport-seance-badge-label { font-size:11px; opacity:0.65; margin-top:3px; }
+.sport-day-tabs { display:flex; gap:8px; margin-bottom:16px; }
+.sport-day-tab { flex:1; padding:10px 6px; border:1.5px solid var(--border); border-radius:10px; background:var(--white); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:var(--muted); cursor:pointer; text-align:center; transition:all 0.2s; }
+.sport-day-tab .day-name { font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:3px; }
+.sport-day-tab .day-seance { font-size:13px; font-weight:600; color:var(--brown); }
+.sport-day-tab .day-status { font-size:10px; margin-top:3px; }
+.sport-day-tab.active { border-color:var(--brown); background:var(--brown); }
+.sport-day-tab.active .day-name, .sport-day-tab.active .day-seance, .sport-day-tab.active .day-status { color:white; }
+.sport-day-tab.done { border-color:var(--success); }
+.sport-day-tab.done .day-seance { color:var(--success); }
+.sport-exercice-card { background:var(--white); border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; }
+.sport-ex-header { padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+.sport-ex-header:hover { background:var(--bg); }
+.sport-ex-info { flex:1; }
+.sport-ex-name { font-size:14px; font-weight:500; color:var(--brown); }
+.sport-ex-muscle { font-size:11px; color:var(--muted); margin-top:2px; }
+.sport-ex-note { font-size:11px; color:var(--taupe); margin-top:2px; font-style:italic; }
+.sport-ex-chevron { font-size:12px; color:var(--muted); transition:transform 0.2s; margin-left:10px; }
+.sport-ex-chevron.open { transform:rotate(180deg); }
+.sport-ex-body { padding:0 16px 14px; border-top:1px solid var(--beige); display:none; }
+.sport-ex-body.open { display:block; }
+.sport-series-header { display:grid; grid-template-columns:36px 1fr 1fr 36px; gap:8px; padding:10px 0 6px; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); text-align:center; }
+.sport-serie-row { display:grid; grid-template-columns:36px 1fr 1fr 36px; gap:8px; align-items:center; padding:5px 0; border-bottom:1px solid var(--beige); }
+.sport-serie-row:last-child { border-bottom:none; }
+.sport-serie-num { font-size:12px; color:var(--muted); text-align:center; }
+.sport-serie-input { border:1.5px solid var(--border); border-radius:8px; padding:7px 6px; font-family:'DM Sans',sans-serif; font-size:13px; text-align:center; background:var(--bg); color:var(--text); width:100%; }
+.sport-serie-input:focus { outline:none; border-color:var(--taupe); }
+.sport-serie-check { width:28px; height:28px; border:1.5px solid var(--border); border-radius:7px; background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; margin:auto; transition:all 0.15s; }
+.sport-serie-check.done { background:var(--success); border-color:var(--success); color:white; }
+.sport-save-btn { width:100%; margin-top:12px; padding:13px; background:var(--brown); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; }
+.sport-save-btn:hover { background:#6a5040; }
+.sport-prog-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:12px; }
+.sport-prog-title { font-size:13px; font-weight:600; color:var(--brown); margin-bottom:14px; }
+.sport-prog-select { border:1.5px solid var(--border); border-radius:8px; padding:8px 12px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--bg); color:var(--text); width:100%; margin-bottom:14px; }
+
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">Mon Espace ·  Charles</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('dashboard',this)">Accueil</button>
+    <button class="nav-tab" onclick="showView('objectifs',this)">Objectifs</button>
+    <button class="nav-tab" onclick="showView('habitudes',this)">Habitudes</button>
+    <button class="nav-tab" onclick="showView('rapport',this)">Rapport</button>
+    <button class="nav-tab" onclick="showView('stats',this)">Stats</button>
+    <button class="nav-tab" onclick="showView('bilans',this)">Bilans</button>
+    <button class="nav-tab" onclick="showView('settings',this)">Réglages</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="view-dashboard" class="view active">
+  <div class="dash-header">
+    <div class="dash-date" id="dashDate"></div>
+    <div class="dash-title">Bonjour, Charles 👋</div>
+    <div class="dash-sub">Conseiller en investissement immobilier</div>
+  </div>
+  <div class="section-header"><span class="section-title">Semaine en cours</span><div class="section-line"></div></div>
+  <div class="kpi-grid" id="dashKpiGrid"></div>
+  <div id="dashPriorites"></div>
+  <div class="section-header"><span class="section-title">Objectifs du mois</span><div class="section-line"></div></div>
+  <div class="kpi-grid-2" id="dashMonthlyGrid" style="margin-bottom:10px;"></div>
+  <div class="section-header"><span class="section-title">Aujourd'hui</span><div class="section-line"></div></div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">✅ Tâches du jour <span class="badge" id="todoBadge"></span></div>
+      </div>
+      <div id="todoList"></div>
+      <div class="todo-add">
+        <input type="text" id="todoInput" placeholder="Ajouter une tâche…" onkeydown="if(event.key==='Enter')addTodo()">
+        <button onclick="addTodo()">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔄 Habitudes <span class="badge" id="habitBadge"></span></div>
+      </div>
+      <div id="habitPreview"></div>
+    </div>
+  </div>
+  <div class="section-header" style="margin-top:20px;"><span class="section-title">Sport</span><div class="section-line"></div></div>
+  <a href="https://charles-creationpages.github.io/sportPurple" target="_blank" class="sport-redirect-btn">
+    💪 Séances de sport
+  </a>
+</div>
+<div id="view-objectifs" class="view">
+  <div class="obj-card">
+    <div class="obj-card-header">
+      <div>
+        <div class="obj-card-title">📅 Semaine en cours</div>
+        <div class="obj-card-sub" id="weekLabel"></div>
+      </div>
+      <button class="reset-btn" onclick="resetWeek()">↺ Reset semaine</button>
+    </div>
+    <div id="weeklyObjItems"></div>
+  </div>
+  <button class="save-week-btn" onclick="saveWeekAnalysis()">
+    <span class="icon">💾</span> Enregistrer les résultats de la semaine & générer l'analyse
+  </button>
+  <div id="objAnalysePrev" style="margin-top:16px;"></div>
+  <div class="obj-card" style="margin-top:20px;">
+    <div class="obj-card-header">
+      <div>
+        <div class="obj-card-title">📆 Mois en cours</div>
+        <div class="obj-card-sub" id="monthLabel"></div>
+      </div>
+      <button class="reset-btn" onclick="resetMonth()">↺ Reset mois</button>
+    </div>
+    <div id="monthlyObjItems"></div>
+  </div>
+</div>
+
+<!-- HABITUDES -->
+<div id="view-habitudes" class="view">
+  <div class="section-header"><span class="section-title">Tracker hebdomadaire</span><div class="section-line"></div></div>
+  <div class="card" style="margin-bottom:16px;"><div id="fullHabitTracker"></div></div>
+  <div class="section-header"><span class="section-title">Scores</span><div class="section-line"></div></div>
+  <div class="two-col" id="habitScoreGrid"></div>
+</div>
+
+<!-- RAPPORT -->
+<div id="view-rapport" class="view">
+  <div class="section-header"><span class="section-title">Bilan semaine</span><div class="section-line"></div></div>
+  <div id="rapportWeekly"></div>
+  <div class="section-header" style="margin-top:24px;"><span class="section-title">Bilan mensuel</span><div class="section-line"></div></div>
+  <div id="rapportMonthly"></div>
+  <div class="section-header" style="margin-top:24px;"><span class="section-title">Habitudes</span><div class="section-line"></div></div>
+  <div id="rapportHabits"></div>
+</div>
+
+<!-- STATS -->
+<div id="view-stats" class="view">
+  <div class="section-header"><span class="section-title">Progression hebdomadaire</span><div class="section-line"></div></div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-header">
+      <div class="card-title">📈 Score global semaine par semaine</div>
+    </div>
+    <canvas id="chartScore" height="80"></canvas>
+    <div id="statsEmpty" style="display:none;text-align:center;padding:30px;color:var(--muted);font-size:13px;">
+      Pas encore d'historique — les données s'accumuleront au fil des semaines 📊
+    </div>
+  </div>
+
+  <div class="section-header"><span class="section-title">Détail par indicateur</span><div class="section-line"></div></div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-header">
+      <div class="card-title">📊 Performances par catégorie</div>
+      <div id="statsLegend" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
+    </div>
+    <canvas id="chartDetail" height="100"></canvas>
+  </div>
+
+  <div class="section-header"><span class="section-title">Analyse automatique</span><div class="section-line"></div></div>
+  <div class="card" style="margin-bottom:14px;" id="statsAnalyse"></div>
+
+  <div class="section-header"><span class="section-title">Historique complet</span><div class="section-line"></div></div>
+  <div id="statsHistorique"></div>
+</div>
+
+<!-- BILANS -->
+<div id="view-bilans" class="view">
+  <div class="section-header"><span class="section-title">Bilan mensuel</span><div class="section-line"></div></div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">📆 Enregistrer le bilan du mois en cours</div>
+    </div>
+    <div id="bilanPreview" style="margin-bottom:16px;"></div>
+    <button class="save-week-btn" onclick="saveMonthBilan()">
+      <span class="icon">💾</span> Enregistrer le bilan mensuel
+    </button>
+  </div>
+
+  <div class="section-header"><span class="section-title">Fiches mensuelles enregistrées</span><div class="section-line"></div></div>
+  <div id="bilansList"></div>
+</div>
+
+<!-- RÉGLAGES -->
+<div id="view-settings" class="view">
+  <div class="settings-section">
+    <div class="settings-label">Objectifs hebdomadaires</div>
+    <div class="card"><div id="settingsWeekly"></div></div>
+  </div>
+  <div class="settings-section">
+    <div class="settings-label">Objectifs mensuels</div>
+    <div class="card"><div id="settingsMonthly"></div></div>
+  </div>
+  <div class="settings-section">
+    <div class="settings-label">Mes habitudes</div>
+    <div class="card">
+      <div id="settingsHabits"></div>
+      <div class="habit-add-row">
+        <input type="text" id="newHabitInput" placeholder="Nouvelle habitude (ex: 🎵 Guitare)…">
+        <button onclick="addHabit()">Ajouter</button>
+      </div>
+    </div>
+  </div>
+  <button class="save-btn" onclick="saveSettings()">Enregistrer</button>
+  <span class="save-confirm" id="saveConfirm">✓ Sauvegardé !</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const DAYS_FR = ['L','M','M','J','V','S','D'];
+const DAYS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+const defaultState = {
+  weekly: {
+    r1:     { label: 'R1 pris',        target: 3,  current: 0 },
+    r2:     { label: 'R2 fixés',       target: 0,  current: 0, dynamicTarget: true },
+    agents: { label: 'Agents appelés', target: 5,  current: 0 },
+    biens:  { label: 'Biens trouvés',  target: 3,  current: 0 },
+  },
+  monthly: {
+    mandats: { label: 'Mandats signés',  target: 5, current: 0 },
+    ventes:  { label: 'Ventes validées', target: 1, current: 0 },
+  },
+  habits: [
+    { id: 'sport', name: '💪 Sport', days: [0,0,0,0,0,0,0], target: 3 },
+  ],
+  todos: [],
+  lastWeek: null,
+  lastMonth: null,
+  history: [],
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('dashboardpurple_v1');
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(defaultState));
+}
+
+function save() {
+  localStorage.setItem('dashboardpurple_v1', JSON.stringify(state));
+}
+
+let state = loadState();
+
+function getWeekKey(d) {
+  const date = new Date(d);
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate() + 4 - (date.getDay()||7));
+  const y = new Date(date.getFullYear(),0,1);
+  return `${date.getFullYear()}-S${Math.ceil((((date-y)/86400000)+1)/7)}`;
+}
+
+function checkReset() {
+  const now = new Date();
+  const wk = getWeekKey(now);
+  const mo = `${now.getFullYear()}-${now.getMonth()}`;
+  if (state.lastWeek && state.lastWeek !== wk) {
+    state.history = state.history || [];
+    state.history.unshift({ type:'week', key:state.lastWeek, weekly: JSON.parse(JSON.stringify(state.weekly)), habits: JSON.parse(JSON.stringify(state.habits)) });
+    if (state.history.length > 20) state.history.pop();
+    Object.keys(state.weekly).forEach(k => state.weekly[k].current = 0);
+    state.habits.forEach(h => h.days = [0,0,0,0,0,0,0]);
+  }
+  if (state.lastMonth && state.lastMonth !== mo) {
+    state.history = state.history || [];
+    state.history.unshift({ type:'month', key:state.lastMonth, monthly: JSON.parse(JSON.stringify(state.monthly)) });
+    Object.keys(state.monthly).forEach(k => state.monthly[k].current = 0);
+  }
+  state.lastWeek = wk;
+  state.lastMonth = mo;
+  save();
+}
+
+function showView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'stats') { renderStats(); }
+  else if (name === 'bilans') { renderBilans(); }
+  else if (name === 'sport') { renderSport(); }
+  else { renderAll(); }
+}
+
+function renderAll() {
+  renderDate();
+  renderDashKPIs();
+  renderPriorites();
+  renderDashMonthly();
+  renderTodos();
+  renderHabitPreview();
+  renderObjectifs();
+  renderHabitudes();
+  renderRapport();
+  renderSettings();
+  const statsView = document.getElementById('view-stats');
+  if (statsView && statsView.classList.contains('active')) renderStats();
+}
+
+// Convertit getDay() (0=Dim) en index semaine Lun-based (0=Lun, 6=Dim)
+function todayIdx() { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; }
+
+function renderDate() {
+  const now = new Date();
+  const el = document.getElementById('dashDate');
+  if (el) el.textContent = `${DAYS_FULL[todayIdx()]} ${now.getDate()} ${MONTHS_FR[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function pct(cur, tar) { if (!tar || tar === 0) return 0; return Math.round(cur / tar * 100); }
+function colorClass(p) { return p >= 100 ? 'green' : p < 50 ? 'warn' : ''; }
+function barWidth(p) { return Math.min(100, p); }
+
+// R2 target = nombre de R1 pris (objectif : transformer 100% des R1)
+function getR2Target() { return state.weekly.r1.current || state.weekly.r1.target; }
+function getEffectiveTarget(k, o) { return (k === 'r2' && o.dynamicTarget) ? getR2Target() : o.target; }
+
+function renderDashKPIs() {
+  const g = document.getElementById('dashKpiGrid');
+  if (!g) return;
+  g.innerHTML = Object.entries(state.weekly).map(([k,o]) => {
+    const tar = getEffectiveTarget(k, o);
+    const p = pct(o.current, tar);
+    const c = colorClass(p);
+
+    if (k === 'r2' && o.dynamicTarget) {
+      const r1count = state.weekly.r1.current;
+      return `<div class="kpi-card">
+        <div class="kpi-accent ${c}"></div>
+        <div class="kpi-label">${o.label}</div>
+        <div class="kpi-value">${p}<span>%</span></div>
+        <div class="kpi-sub">${r1count === 0 ? 'En attente de R1' : `${p}% de transformation`}</div>
+        <div class="progress-bar"><div class="progress-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+      </div>`;
+    }
+
+    return `<div class="kpi-card">
+      <div class="kpi-accent ${c}"></div>
+      <div class="kpi-label">${o.label}</div>
+      <div class="kpi-value">${o.current} <span>/ ${tar}</span></div>
+      <div class="kpi-sub">${p}% de l'objectif</div>
+      <div class="progress-bar"><div class="progress-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderDashMonthly() {
+  const g = document.getElementById('dashMonthlyGrid');
+  if (!g) return;
+  g.innerHTML = Object.entries(state.monthly).map(([k,o]) => {
+    const p = pct(o.current, o.target);
+    const sub = p >= 100 ? '🎉 Objectif atteint !' : p === 0 ? 'À décrocher !' : `${p}% de l'objectif`;
+    return `<div class="monthly-card">
+      <div class="monthly-label">${o.label}</div>
+      <div class="monthly-value">${o.current} <span>/ ${o.target}</span></div>
+      <div class="monthly-sub">${sub}</div>
+      <div class="monthly-bar"><div class="monthly-bar-fill" style="width:${barWidth(p)}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderTodos() {
+  const list = document.getElementById('todoList');
+  const badge = document.getElementById('todoBadge');
+  if (!list) return;
+  if (!state.todos || !state.todos.length) {
+    list.innerHTML = '<div style="padding:14px 0;text-align:center;color:var(--muted);font-size:12px;">Ajoutez vos tâches du jour ✨</div>';
+    if (badge) badge.textContent = '0';
+    return;
+  }
+  const rem = state.todos.filter(t => !t.done).length;
+  if (badge) {
+    badge.textContent = rem === 0 ? '✓ Tout fait !' : `${rem} restante${rem > 1 ? 's' : ''}`;
+    badge.className = 'badge' + (rem === 0 ? ' green' : '');
+  }
+  list.innerHTML = state.todos.map((t, i) => `
+    <div class="todo-item">
+      <div class="todo-check ${t.done ? 'done' : ''}" onclick="toggleTodo(${i})">${t.done ? '✓' : ''}</div>
+      <div class="todo-text ${t.done ? 'done' : ''}" onclick="toggleTodo(${i})">${t.text}</div>
+      <button onclick="deleteTodo(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;line-height:1;transition:color 0.15s;" onmouseover="this.style.color='#C0392B'" onmouseout="this.style.color='var(--muted)'">×</button>
+    </div>`).join('');
+}
+
+function toggleTodo(i) {
+  state.todos[i].done = true;
+  save();
+  renderTodos();
+  // Fade out puis suppression après 2s
+  const items = document.querySelectorAll('.todo-item');
+  if (items[i]) {
+    setTimeout(() => {
+      items[i].classList.add('fading');
+      setTimeout(() => {
+        state.todos.splice(i, 1);
+        save();
+        renderTodos();
+      }, 600);
+    }, 1400);
+  }
+}
+function deleteTodo(i) { state.todos.splice(i,1); save(); renderTodos(); }
+function addTodo() {
+  const inp = document.getElementById('todoInput');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  state.todos = state.todos || [];
+  state.todos.push({ text: txt, done: false });
+  inp.value = '';
+  save();
+  renderTodos();
+}
+
+function renderHabitPreview() {
+  const c = document.getElementById('habitPreview');
+  const badge = document.getElementById('habitBadge');
+  if (!c) return;
+  const today = todayIdx();
+  let done = 0, total = 0;
+  c.innerHTML = state.habits.map(h => {
+    const d = h.days.filter(x=>x).length;
+    done += d; total += habitTarget(h);
+    return `<div class="habit-row">
+      <div class="habit-name">${h.name}</div>
+      <div class="habit-days">
+        ${h.days.map((v,i) => `<button class="day-btn ${v?'done':''} ${i===today?'today':''}" onclick="toggleDay('${h.id}',${i})">${DAYS_FR[i]}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  const p = total > 0 ? Math.round(done/total*100) : 0;
+  if (badge) badge.textContent = `${p}% cette semaine`;
+}
+
+function toggleDay(id, day) {
+  const h = state.habits.find(x => x.id === id);
+  if (h) { h.days[day] = h.days[day] ? 0 : 1; save(); renderHabitPreview(); renderHabitudes(); renderRapport(); }
+}
+
+function renderObjectifs() {
+  const wi = document.getElementById('weeklyObjItems');
+  const mi = document.getElementById('monthlyObjItems');
+  const wl = document.getElementById('weekLabel');
+  const ml = document.getElementById('monthLabel');
+  const now = new Date();
+  if (wl) wl.textContent = getWeekKey(now);
+  if (ml) ml.textContent = `${MONTHS_FR[now.getMonth()]} ${now.getFullYear()}`;
+  if (wi) wi.innerHTML = Object.entries(state.weekly).map(([k,o]) => {
+    const tar = getEffectiveTarget(k, o);
+    const p = pct(o.current, tar);
+    const c = colorClass(p);
+    const targetLabel = (k === 'r2' && o.dynamicTarget)
+      ? `Objectif : ${tar} R1 transformés (100%)`
+      : `Objectif : ${tar}`;
+    return `<div class="obj-item">
+      <div><div class="obj-name">${o.label}</div><div class="obj-target">${targetLabel}</div></div>
+      <div class="obj-counter">
+        <button class="counter-btn" onclick="updateCounter('weekly','${k}',-1)">−</button>
+        <div class="counter-display">${o.current}</div>
+        <button class="counter-btn" onclick="updateCounter('weekly','${k}',1)">+</button>
+      </div>
+      <div class="obj-progress-wrap">
+        <div class="obj-pct">${p}%</div>
+        <div class="progress-bar"><div class="progress-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+  if (mi) mi.innerHTML = Object.entries(state.monthly).map(([k,o]) => {
+    const p = pct(o.current, o.target);
+    const c = colorClass(p);
+    return `<div class="obj-item">
+      <div><div class="obj-name">${o.label}</div><div class="obj-target">Objectif : ${o.target}</div></div>
+      <div class="obj-counter">
+        <button class="counter-btn" onclick="updateCounter('monthly','${k}',-1)">−</button>
+        <div class="counter-display">${o.current}</div>
+        <button class="counter-btn" onclick="updateCounter('monthly','${k}',1)">+</button>
+      </div>
+      <div class="obj-progress-wrap">
+        <div class="obj-pct">${p}%</div>
+        <div class="progress-bar"><div class="progress-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateCounter(period, key, delta) {
+  state[period][key].current = Math.max(0, state[period][key].current + delta);
+  save(); renderAll();
+}
+
+function resetWeek() {
+  if (confirm('Remettre les compteurs hebdomadaires à 0 ?')) {
+    Object.keys(state.weekly).forEach(k => state.weekly[k].current = 0);
+    state.habits.forEach(h => h.days = [0,0,0,0,0,0,0]);
+    save(); renderAll();
+  }
+}
+
+function resetMonth() {
+  if (confirm('Remettre les compteurs mensuels à 0 ?')) {
+    Object.keys(state.monthly).forEach(k => state.monthly[k].current = 0);
+    save(); renderAll();
+  }
+}
+
+function renderHabitudes() {
+  const tracker = document.getElementById('fullHabitTracker');
+  const scoreGrid = document.getElementById('habitScoreGrid');
+  const today = todayIdx();
+  if (tracker) {
+    tracker.innerHTML = `<div style="display:flex;align-items:center;padding-bottom:10px;margin-bottom:4px;border-bottom:1px solid var(--border);">
+      <div style="width:106px;font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Habitude</div>
+      <div style="display:flex;gap:4px;flex:1;">${DAYS_FULL.map((d,i)=>`<div style="width:30px;text-align:center;font-size:9px;font-weight:600;text-transform:uppercase;color:${i===today?'var(--brown)':'var(--muted)'};letter-spacing:0.04em;">${d.slice(0,3)}</div>`).join('')}</div>
+      <div style="width:36px;text-align:right;font-size:9px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Score</div>
+    </div>` +
+    state.habits.map(h => {
+      const done = h.days.filter(x=>x).length;
+      const sc = Math.round(done/habitTarget(h)*100);
+      return `<div class="habit-row">
+        <div class="habit-name">${h.name}</div>
+        <div class="habit-days">${h.days.map((v,i)=>`<button class="day-btn ${v?'done':''} ${i===today?'today':''}" onclick="toggleDayFull('${h.id}',${i})">${DAYS_FR[i]}</button>`).join('')}</div>
+        <div class="habit-score">${sc}%</div>
+      </div>`;
+    }).join('');
+  }
+  if (scoreGrid) {
+    scoreGrid.innerHTML = state.habits.map(h => {
+      const done = h.days.filter(x=>x).length;
+      const tar = habitTarget(h);
+      const p = Math.round(done/tar*100);
+      const c = p>=80?'green':p<50?'warn':'';
+      return `<div class="card" style="text-align:center;padding:16px;">
+        <div style="font-size:22px;margin-bottom:6px;">${h.name.split(' ')[0]}</div>
+        <div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px;">${h.name.split(' ').slice(1).join(' ')}</div>
+        <div style="font-family:'Lora',serif;font-size:28px;color:var(--brown);">${done}<span style="font-size:14px;color:var(--muted);">/${tar}</span></div>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 10px;">${p}% de l'objectif</div>
+        <div class="progress-bar"><div class="progress-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function toggleDayFull(id, day) {
+  const h = state.habits.find(x => x.id === id);
+  if (h) { h.days[day] = h.days[day] ? 0 : 1; save(); renderHabitudes(); renderHabitPreview(); renderRapport(); }
+}
+
+function rapportBlock(title, score, rows) {
+  return `<div class="rapport-block">
+    <div class="rapport-header">
+      <div class="rapport-title">${title}</div>
+      <div class="rapport-score">${score}<span>%</span></div>
+    </div>
+    <div>${rows}</div>
+  </div>`;
+}
+
+function habitTarget(h) { return h.target || 7; }
+function rapportRow(icon, name, cur, tar) {
+  const p = pct(cur, tar);
+  const c = p>=100?'over':p<50?'under':'';
+  return `<div class="rapport-row">
+    <div class="rapport-name">${icon} ${name}</div>
+    <div class="rapport-val">${cur} / ${tar}</div>
+    <div class="rapport-bar"><div class="rapport-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+    <div style="font-size:11px;color:var(--muted);min-width:36px;text-align:right;">${p}%</div>
+  </div>`;
+}
+
+function avgScore(items) {
+  const vals = Object.values(items);
+  return Math.round(vals.reduce((s,o)=>s+o.current/o.target*100,0)/vals.length);
+}
+
+function renderRapport() {
+  const rw = document.getElementById('rapportWeekly');
+  const rm = document.getElementById('rapportMonthly');
+  const rh = document.getElementById('rapportHabits');
+
+  if (rw) {
+    const score = avgScore(state.weekly);
+    const rows = Object.values(state.weekly).map(o => {
+      const p = pct(o.current, o.target);
+      const icon = p>=100?'🎉':p>=50?'📈':'⚠️';
+      return rapportRow(icon, o.label, o.current, o.target);
+    }).join('');
+    let html = rapportBlock(`Semaine ${getWeekKey(new Date())}`, score, rows);
+    // Historique
+    const hist = (state.history||[]).filter(h=>h.type==='week').slice(0,3);
+    hist.forEach(snap => {
+      const sc = avgScore(snap.weekly);
+      const r = Object.values(snap.weekly).map(o => rapportRow('📌', o.label, o.current, o.target)).join('');
+      html += `<div style="opacity:0.65;">${rapportBlock(`${snap.key} (archivée)`, sc, r)}</div>`;
+    });
+    rw.innerHTML = html;
+  }
+
+  if (rm) {
+    const score = avgScore(state.monthly);
+    const rows = Object.values(state.monthly).map(o => {
+      const p = pct(o.current, o.target);
+      const icon = p>=100?'🎉':p>=50?'📈':'⚠️';
+      return rapportRow(icon, o.label, o.current, o.target);
+    }).join('');
+    rm.innerHTML = rapportBlock(`${MONTHS_FR[new Date().getMonth()]} ${new Date().getFullYear()}`, avgScore(state.monthly), rows);
+  }
+
+  if (rh) {
+    const habRows = state.habits.map(h => {
+      const done = h.days.filter(x=>x).length;
+      const tar = habitTarget(h);
+      const p = Math.round(done/tar*100);
+      const icon = p>=100?'🌟':p>=50?'👍':'💪';
+      return rapportRow(icon, h.name, done, tar);
+    }).join('');
+    const habScore = state.habits.length > 0
+      ? Math.round(state.habits.reduce((s,h)=>s+Math.round(h.days.filter(x=>x).length/habitTarget(h)*100),0)/state.habits.length)
+      : 0;
+    rh.innerHTML = rapportBlock('Habitudes — semaine en cours', habScore, habRows);
+  }
+}
+
+function renderSettings() {
+  const sw = document.getElementById('settingsWeekly');
+  const sm = document.getElementById('settingsMonthly');
+  const sh = document.getElementById('settingsHabits');
+  if (sw) sw.innerHTML = Object.entries(state.weekly).map(([k,o])=>`
+    <div class="setting-row">
+      <div><div class="setting-label-text">${o.label}</div><div class="setting-desc">Objectif par semaine</div></div>
+      <input type="number" class="num-input" id="sw-${k}" value="${o.target}" min="1" max="999">
+    </div>`).join('');
+  if (sm) sm.innerHTML = Object.entries(state.monthly).map(([k,o])=>`
+    <div class="setting-row">
+      <div><div class="setting-label-text">${o.label}</div><div class="setting-desc">Objectif par mois</div></div>
+      <input type="number" class="num-input" id="sm-${k}" value="${o.target}" min="1" max="999">
+    </div>`).join('');
+  if (sh) sh.innerHTML = state.habits.map((h,i)=>`
+    <div class="habit-setting-row">
+      <input type="text" class="habit-input" id="hn-${i}" value="${h.name}">
+      <button class="habit-delete" onclick="deleteHabit(${i})">×</button>
+    </div>`).join('');
+}
+
+function saveSettings() {
+  Object.keys(state.weekly).forEach(k => {
+    const inp = document.getElementById(`sw-${k}`);
+    if (inp) state.weekly[k].target = Math.max(1, parseInt(inp.value)||1);
+  });
+  Object.keys(state.monthly).forEach(k => {
+    const inp = document.getElementById(`sm-${k}`);
+    if (inp) state.monthly[k].target = Math.max(1, parseInt(inp.value)||1);
+  });
+  state.habits.forEach((h,i) => {
+    const inp = document.getElementById(`hn-${i}`);
+    if (inp) h.name = inp.value;
+  });
+  save(); renderAll();
+  const c = document.getElementById('saveConfirm');
+  c.classList.add('show');
+  setTimeout(()=>c.classList.remove('show'), 2500);
+}
+
+function addHabit() {
+  const inp = document.getElementById('newHabitInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  state.habits.push({ id:'h_'+Date.now(), name, days:[0,0,0,0,0,0,0] });
+  inp.value = '';
+  save(); renderAll();
+}
+
+function deleteHabit(i) {
+  if (confirm(`Supprimer "${state.habits[i].name}" ?`)) {
+    state.habits.splice(i,1); save(); renderAll();
+  }
+}
+
+// ── STATS ──────────────────────────────────────────
+let chartScoreInst = null;
+let chartDetailInst = null;
+
+function renderStats() {
+  const history = (state.history || []).filter(h => h.type === 'week');
+
+  // Ajoute semaine courante comme preview
+  const allWeeks = [
+    ...history.slice().reverse(),
+    { key: getWeekKey(new Date()) + ' (en cours)', weekly: JSON.parse(JSON.stringify(state.weekly)), current: true }
+  ];
+
+  const empty = document.getElementById('statsEmpty');
+  if (history.length === 0) {
+    if (empty) empty.style.display = 'block';
+  } else {
+    if (empty) empty.style.display = 'none';
+  }
+
+  const labels = allWeeks.map(w => w.key.replace('en cours','●'));
+  const scores = allWeeks.map(w => {
+    const vals = Object.values(w.weekly);
+    return Math.round(vals.reduce((s,o) => s + o.current / o.target * 100, 0) / vals.length);
+  });
+
+  // Couleurs par indicateur
+  const indicatorColors = {
+    r1:     '#A8896C',
+    r2:     '#7D6249',
+    agents: '#C4935A',
+    biens:  '#6B8F71',
+  };
+
+  // Chart score global
+  const ctxScore = document.getElementById('chartScore');
+  if (ctxScore) {
+    if (chartScoreInst) chartScoreInst.destroy();
+    chartScoreInst = new Chart(ctxScore, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Score global (%)',
+          data: scores,
+          borderColor: '#7D6249',
+          backgroundColor: 'rgba(168,137,108,0.12)',
+          borderWidth: 2.5,
+          pointBackgroundColor: scores.map((s,i) => i === scores.length-1 ? '#7D6249' : '#A8896C'),
+          pointRadius: scores.map((_,i) => i === scores.length-1 ? 6 : 4),
+          tension: 0.35,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { family: 'DM Sans', size: 11 }, color: '#9E8E80' }, grid: { color: '#DDD3C7' } },
+          x: { ticks: { font: { family: 'DM Sans', size: 10 }, color: '#9E8E80' }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // Chart détail par indicateur
+  const ctxDetail = document.getElementById('chartDetail');
+  const legend = document.getElementById('statsLegend');
+  if (ctxDetail) {
+    if (chartDetailInst) chartDetailInst.destroy();
+    const keys = Object.keys(state.weekly);
+    const datasets = keys.map(k => ({
+      label: state.weekly[k].label,
+      data: allWeeks.map(w => w.weekly[k] ? Math.round(w.weekly[k].current / w.weekly[k].target * 100) : 0),
+      backgroundColor: indicatorColors[k] || '#A8896C',
+      borderRadius: 4,
+      borderSkipped: false,
+    }));
+
+    chartDetailInst = new Chart(ctxDetail, {
+      type: 'bar',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { family: 'DM Sans', size: 11 }, color: '#9E8E80' }, grid: { color: '#DDD3C7' } },
+          x: { ticks: { font: { family: 'DM Sans', size: 10 }, color: '#9E8E80' }, grid: { display: false } }
+        }
+      }
+    });
+
+    if (legend) {
+      legend.innerHTML = keys.map(k => `
+        <div style="display:flex;align-items:center;gap:5px;">
+          <div style="width:10px;height:10px;border-radius:3px;background:${indicatorColors[k]||'#A8896C'};flex-shrink:0;"></div>
+          <span style="font-size:10px;color:var(--muted);">${state.weekly[k].label}</span>
+        </div>`).join('');
+    }
+  }
+
+  // Analyse
+  renderAnalyse(allWeeks, scores);
+
+  // Historique
+  renderHistorique(allWeeks);
+}
+
+// ── ANALYSE MÉTIER ─────────────────────────────────
+function analyseMetier(weekly) {
+  const items = [];
+  const r2Target = weekly.r1 ? weekly.r1.current : 0;
+  const r1  = weekly.r1    ? Math.round(weekly.r1.current    / weekly.r1.target    * 100) : 0;
+  const r2  = (weekly.r2 && r2Target > 0) ? Math.round(weekly.r2.current / r2Target * 100) : (weekly.r2?.current > 0 ? 100 : 0);
+  const ag  = weekly.agents? Math.round(weekly.agents.current/ weekly.agents.target* 100) : 0;
+  const bi  = weekly.biens ? Math.round(weekly.biens.current / weekly.biens.target * 100) : 0;
+
+  // R1
+  if (r1 >= 100) {
+    items.push({ icon:'✅', type:'ok', text:`<strong>R1 : ${weekly.r1.current}/${weekly.r1.target} (${r1}%)</strong> — Objectif R1 atteint ! Tu as bien travaillé tes leads et contacts.` });
+  } else if (r1 >= 60) {
+    items.push({ icon:'⚠️', type:'warn', text:`<strong>R1 : ${weekly.r1.current}/${weekly.r1.target} (${r1}%)</strong> — Pas mal mais tu peux faire mieux. Relance tes leads en attente et rappelle tes contacts.` });
+  } else {
+    items.push({ icon:'🔴', type:'warn', text:`<strong>R1 : ${weekly.r1.current}/${weekly.r1.target} (${r1}%)</strong> — Pas assez de R1 cette semaine. Bloque des créneaux fixes pour appeler tes leads — c'est la base de tout.` });
+  }
+
+  // R2
+  if (r2Target === 0) {
+    items.push({ icon:'ℹ️', type:'ok', text:`<strong>R2 fixés : ${weekly.r2?.current||0}</strong> — Pas de R1 cette semaine, donc pas de R2 à transformer.` });
+  } else if (r2 >= 100) {
+    items.push({ icon:'✅', type:'ok', text:`<strong>R2 : ${weekly.r2.current}/${r2Target} (${r2}%)</strong> — 100% de transformation R1→R2 ! Ton discours au R1 est excellent.` });
+  } else if (r2 >= 60) {
+    items.push({ icon:'⚠️', type:'warn', text:`<strong>R2 : ${weekly.r2.current}/${r2Target} (${r2}%)</strong> — Taux de transformation R1→R2 perfectible. Travaille ton closing et ta présentation en fin de R1.` });
+  } else {
+    items.push({ icon:'🔴', type:'warn', text:`<strong>R2 : ${weekly.r2.current}/${r2Target} (${r2}%)</strong> — Mauvais taux de transformation. Ton discours au R1 est à retravailler en priorité — c'est là que tout se joue.` });
+  }
+
+  // Agents
+  if (ag >= 100) {
+    items.push({ icon:'✅', type:'ok', text:`<strong>Agents : ${weekly.agents.current}/${weekly.agents.target} (${ag}%)</strong> — Bonne prospection agents cette semaine, continue à entretenir ce réseau !` });
+  } else if (ag >= 50) {
+    items.push({ icon:'⚠️', type:'warn', text:`<strong>Agents : ${weekly.agents.current}/${weekly.agents.target} (${ag}%)</strong> — Tu n'as pas appelé suffisamment d'agents. Prévois un bloc d'appels dédié la semaine prochaine.` });
+  } else {
+    items.push({ icon:'🔴', type:'warn', text:`<strong>Agents : ${weekly.agents.current}/${weekly.agents.target} (${ag}%)</strong> — Clairement pas assez d'agents appelés. Sans prospection agents régulière, le stock de biens va s'assécher. Priorité absolue la semaine prochaine.` });
+  }
+
+  // Biens
+  if (bi >= 100) {
+    items.push({ icon:'✅', type:'ok', text:`<strong>Biens trouvés : ${weekly.biens.current}/${weekly.biens.target} (${bi}%)</strong> — Bon sourcing cette semaine, tu as de quoi alimenter tes R2 !` });
+  } else if (bi >= 50) {
+    items.push({ icon:'⚠️', type:'warn', text:`<strong>Biens trouvés : ${weekly.biens.current}/${weekly.biens.target} (${bi}%)</strong> — Pas assez de biens trouvés. Relance les agents déjà contactés et cherche de nouveaux logements à présenter.` });
+  } else {
+    items.push({ icon:'🔴', type:'warn', text:`<strong>Biens trouvés : ${weekly.biens.current}/${weekly.biens.target} (${bi}%)</strong> — Stock de biens insuffisant. C'est directement lié aux agents : plus tu appelles, plus tu trouves. Refais le plein la semaine prochaine.` });
+  }
+
+  return items;
+}
+
+function analyseMonthly(monthly) {
+  const items = [];
+  const ma = monthly.mandats ? Math.round(monthly.mandats.current / monthly.mandats.target * 100) : 0;
+  const ve = monthly.ventes  ? Math.round(monthly.ventes.current  / monthly.ventes.target  * 100) : 0;
+
+  if (ma >= 100) {
+    items.push({ icon:'🏆', type:'great', text:`<strong>Mandats : ${monthly.mandats.current}/${monthly.mandats.target} (${ma}%)</strong> — Objectif mandats atteint ! Ton process R1→R2 fonctionne très bien ce mois-ci.` });
+  } else if (ma >= 60) {
+    items.push({ icon:'⚠️', type:'warn', text:`<strong>Mandats : ${monthly.mandats.current}/${monthly.mandats.target} (${ma}%)</strong> — Tu es en bonne voie pour les mandats. Revois ton process R1→R2 pour convaincre les derniers prospects.` });
+  } else {
+    items.push({ icon:'🔴', type:'warn', text:`<strong>Mandats : ${monthly.mandats.current}/${monthly.mandats.target} (${ma}%)</strong> — Peu de mandats ce mois. C'est le signe d'un process R1→R2 à revoir globalement — présentation, arguments, suivi post-R1.` });
+  }
+
+  if (ve >= 100) {
+    items.push({ icon:'🎉', type:'great', text:`<strong>Ventes : ${monthly.ventes.current}/${monthly.ventes.target} (${ve}%)</strong> — Vente(s) validée(s) ! C'est le résultat de tout ton travail sur l'ensemble de la chaîne. Bravo !` });
+  } else {
+    items.push({ icon:'🎯', type:'warn', text:`<strong>Ventes : ${monthly.ventes.current}/${monthly.ventes.target} (${ve}%)</strong> — Pas encore de vente ce mois. La vente est le fruit de toute la chaîne : agents → biens → R1 → R2 → mandat. Travaille chaque maillon.` });
+  }
+
+  return items;
+}
+
+function renderPriorites() {
+  const container = document.getElementById('dashPriorites');
+  if (!container) return;
+
+  // Uniquement si une semaine est déjà enregistrée
+  const lastSnap = (state.history || []).find(h => h.type === 'week' && h.analyse);
+  if (!lastSnap) { container.innerHTML = ''; return; }
+
+  const items = lastSnap.analyse || [];
+  const warnings = items.filter(i => i.type === 'warn');
+  if (warnings.length === 0) {
+    container.innerHTML = `<div class="priorite-item ok" style="margin-top:10px;"><span class="priorite-icon">🌟</span><div class="priorite-text">Tous tes indicateurs étaient dans le vert la semaine dernière (${lastSnap.key}). Continue !</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="priorite-block">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;margin-top:12px;">⚠️ Points à améliorer cette semaine (basé sur ${lastSnap.key})</div>` +
+    warnings.map(i => `
+      <div class="priorite-item warn">
+        <span class="priorite-icon">${i.icon}</span>
+        <div class="priorite-text">${i.text}</div>
+      </div>`).join('') +
+    `</div>`;
+}
+
+function saveWeekAnalysis() {
+  const weekKey = getWeekKey(new Date());
+  // Vérifier si déjà enregistré
+  const existing = (state.history || []).find(h => h.type === 'week' && h.key === weekKey);
+  if (existing) {
+    if (!confirm(`La semaine ${weekKey} est déjà enregistrée. Écraser avec les chiffres actuels ?`)) return;
+    state.history = state.history.filter(h => !(h.type === 'week' && h.key === weekKey));
+  }
+
+  const snap = {
+    type: 'week',
+    key: weekKey,
+    date: new Date().toLocaleDateString('fr-FR'),
+    weekly: JSON.parse(JSON.stringify(state.weekly)),
+    habits: JSON.parse(JSON.stringify(state.habits)),
+    analyse: analyseMetier(state.weekly),
+    analyseMonthly: analyseMonthly(state.monthly),
+  };
+
+  state.history = state.history || [];
+  state.history.unshift(snap);
+  save();
+
+  // Afficher l'analyse dans la page objectifs
+  const container = document.getElementById('objAnalysePrev');
+  if (container) {
+    const allItems = [...snap.analyse, ...snap.analyseMonthly];
+    container.innerHTML = `
+      <div class="analyse-block">
+        <div class="analyse-header">
+          <div class="analyse-header-title">📋 Analyse — ${weekKey}</div>
+          <div class="analyse-header-week">Enregistrée le ${snap.date}</div>
+        </div>
+        <div class="analyse-body">
+          ${allItems.map(i => `
+            <div class="analyse-item ${i.type === 'great' ? 'positif' : ''}">
+              <div class="analyse-item-icon">${i.icon}</div>
+              <div class="analyse-item-text">${i.text}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // Notif
+  alert(`✅ Semaine ${weekKey} enregistrée ! Rendez-vous dans l'onglet Stats pour voir le bilan complet.`);
+  renderStats();
+}
+
+function renderAnalyse(allWeeks, scores) {
+  const container = document.getElementById('statsAnalyse');
+  if (!container) return;
+
+  // Chercher la dernière analyse enregistrée
+  const lastSnap = (state.history || []).find(h => h.type === 'week' && h.analyse);
+
+  if (!lastSnap) {
+    container.innerHTML = `<div class="analyse-item">
+      <div class="analyse-item-icon">📅</div>
+      <div class="analyse-item-text">Aucune analyse enregistrée pour l'instant. Va dans <strong>Objectifs</strong> et clique sur <strong>"Enregistrer les résultats de la semaine"</strong> en fin de semaine pour générer ton analyse.</div>
+    </div>`;
+    return;
+  }
+
+  const cur = allWeeks[allWeeks.length - 1];
+  const curScore = scores[scores.length - 1];
+  const prevScore = scores.length >= 2 ? scores[scores.length - 2] : null;
+  const diff = prevScore !== null ? curScore - prevScore : null;
+
+  let introText = '';
+  if (curScore >= 100) introText = `🏆 <strong>Semaine parfaite à ${curScore}% !</strong> Tous tes objectifs sont atteints ou dépassés.`;
+  else if (curScore >= 75) introText = `💪 <strong>Très bonne semaine à ${curScore}%.</strong> Tu es sur la bonne trajectoire.`;
+  else if (curScore >= 50) introText = `📈 <strong>Semaine correcte à ${curScore}%.</strong> La moitié des objectifs est atteinte.`;
+  else introText = `⚡ <strong>Semaine difficile à ${curScore}%.</strong> Plusieurs points à corriger ci-dessous.`;
+
+  if (diff !== null) {
+    introText += diff > 0 ? ` <span style="color:var(--success)">+${diff}pts vs semaine précédente.</span>`
+                          : diff < 0 ? ` <span style="color:var(--warning)">${diff}pts vs semaine précédente.</span>`
+                          : ` Score stable vs semaine précédente.`;
+  }
+
+  const allItems = [...(lastSnap.analyse || []), ...(lastSnap.analyseMonthly || [])];
+
+  container.innerHTML = `
+    <div class="analyse-block">
+      <div class="analyse-header">
+        <div class="analyse-header-title">📋 Dernière analyse — ${lastSnap.key}</div>
+        <div class="analyse-header-week">Enregistrée le ${lastSnap.date}</div>
+      </div>
+      <div class="analyse-body">
+        <div class="analyse-item">
+          <div class="analyse-item-icon">📊</div>
+          <div class="analyse-item-text">${introText}</div>
+        </div>
+        ${allItems.map(i => `
+          <div class="analyse-item ${i.type === 'great' ? 'positif' : ''}">
+            <div class="analyse-item-icon">${i.icon}</div>
+            <div class="analyse-item-text">${i.text}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── END ANALYSE MÉTIER ──────────────────────────────
+
+
+function renderHistorique(allWeeks) {
+  const container = document.getElementById('statsHistorique');
+  if (!container) return;
+  const saved = (state.history || []).filter(h => h.type === 'week');
+  if (saved.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucun bilan enregistré pour l'instant.<br>Clique sur <strong>"Enregistrer les résultats"</strong> dans l'onglet Objectifs chaque fin de semaine.</div>`;
+    return;
+  }
+
+  container.innerHTML = saved.map(w => {
+    const vals = Object.values(w.weekly);
+    const score = Math.round(vals.reduce((s,o) => s + o.current / o.target * 100, 0) / vals.length);
+    const scoreColor = score >= 100 ? 'var(--success)' : score >= 60 ? 'var(--taupe)' : 'var(--warning)';
+    const rows = vals.map(o => {
+      const p = Math.round(o.current / o.target * 100);
+      const c = p >= 100 ? 'green' : '';
+      return `<div class="hist-bar-row">
+        <div class="hist-bar-label">${o.label}</div>
+        <div class="hist-bar-wrap"><div class="hist-bar-fill ${c}" style="width:${barWidth(p)}%"></div></div>
+        <div class="hist-bar-pct">${o.current}/${o.target} <span style="color:var(--muted)">(${p}%)</span></div>
+      </div>`;
+    }).join('');
+
+    const analyseItems = [...(w.analyse||[]), ...(w.analyseMonthly||[])];
+    const analyseHTML = analyseItems.length > 0 ? `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--beige);">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Analyse</div>
+        ${analyseItems.map(i => `
+          <div style="display:flex;gap:8px;padding:5px 0;font-size:12px;border-bottom:1px solid var(--beige);">
+            <span>${i.icon}</span>
+            <span>${i.text}</span>
+          </div>`).join('')}
+      </div>` : '';
+
+    return `<div class="hist-row">
+      <div class="hist-row-header">
+        <div>
+          <div class="hist-week-name">${w.key}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px;">Enregistré le ${w.date}</div>
+        </div>
+        <div class="hist-score-badge" style="color:${scoreColor}">${score}%</div>
+      </div>
+      <div class="hist-bars">${rows}</div>
+      ${analyseHTML}
+    </div>`;
+  }).join('');
+}
+
+// ── END STATS ───────────────────────────────────────
+
+// ── BILANS MENSUELS ─────────────────────────────────
+function getMonthKey(date) {
+  const d = date || new Date();
+  return `${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function renderBilanPreview() {
+  const container = document.getElementById('bilanPreview');
+  if (!container) return;
+  const now = new Date();
+  const weeksBilan = (state.history || []).filter(h => h.type === 'week');
+  const totalWeeks = weeksBilan.length;
+
+  // Cumul semaines enregistrées ce mois
+  const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+  const weeksThisMonth = weeksBilan.filter(w => {
+    // approximation : comparer date enregistrée
+    return w.date && w.date.includes(`/${now.getMonth()+1}/`) || true;
+  });
+
+  container.innerHTML = `
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Récapitulatif du mois de <strong style="color:var(--brown)">${getMonthKey()}</strong> — valeurs actuelles des compteurs</div>
+    <div class="bilan-grid">
+      ${Object.entries(state.weekly).map(([k,o]) => {
+        const monthlyTarget = k === 'r2' ? state.weekly.r1.target * 4 : o.target * 4;
+        const p = Math.round(o.current / monthlyTarget * 100);
+        const cls = p >= 100 ? 'green' : p < 50 ? 'warn' : '';
+        return `<div class="bilan-stat">
+          <div class="bilan-stat-label">${o.label}</div>
+          <div class="bilan-stat-val">${o.current} <span>/ ${monthlyTarget}</span></div>
+          <div class="bilan-stat-pct ${cls}">${p}%</div>
+        </div>`;
+      }).join('')}
+      ${Object.values(state.monthly).map(o => {
+        const p = Math.round(o.current / o.target * 100);
+        const cls = p >= 100 ? 'green' : p < 50 ? 'warn' : '';
+        return `<div class="bilan-stat">
+          <div class="bilan-stat-label">${o.label}</div>
+          <div class="bilan-stat-val">${o.current} <span>/ ${o.target}</span></div>
+          <div class="bilan-stat-pct ${cls}">${p}%</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function saveMonthBilan() {
+  const now = new Date();
+  const monthKey = getMonthKey(now);
+
+  const existing = (state.monthBilans || []).find(b => b.monthKey === monthKey);
+  if (existing) {
+    if (!confirm(`Un bilan pour ${monthKey} existe déjà. Écraser avec les chiffres actuels ?`)) return;
+    state.monthBilans = state.monthBilans.filter(b => b.monthKey !== monthKey);
+  }
+
+  // Construire les stats complètes — objectifs hebdo × 4 pour le mois (R2 = R1 × 4)
+  const allIndicateurs = {
+    ...Object.fromEntries(Object.entries(state.weekly).map(([k,v]) => {
+      const monthlyTarget = k === 'r2' ? state.weekly.r1.target * 4 : v.target * 4;
+      return [k, {...v, target: monthlyTarget, dynamicTarget: false}];
+    })),
+    ...Object.fromEntries(Object.entries(state.monthly).map(([k,v]) => [k, {...v}])),
+  };
+
+  const vals = Object.values(allIndicateurs);
+  const scoreGlobal = Math.round(vals.reduce((s,o) => s + o.current / o.target * 100, 0) / vals.length);
+
+  // Analyse mensuelle
+  const analyse = analyseMonthly(state.monthly);
+  // Ajouter analyse hebdo cumulée
+  const analyseHebdo = analyseMetier(state.weekly);
+
+  const bilan = {
+    monthKey,
+    date: now.toLocaleDateString('fr-FR'),
+    scoreGlobal,
+    weekly: JSON.parse(JSON.stringify(state.weekly)),
+    monthly: JSON.parse(JSON.stringify(state.monthly)),
+    analyse: [...analyseHebdo, ...analyse],
+  };
+
+  state.monthBilans = state.monthBilans || [];
+  state.monthBilans.unshift(bilan);
+  save();
+
+  alert(`✅ Bilan de ${monthKey} enregistré !`);
+  renderBilans();
+}
+
+function renderBilans() {
+  renderBilanPreview();
+  const container = document.getElementById('bilansList');
+  if (!container) return;
+
+  const bilans = state.monthBilans || [];
+  if (bilans.length === 0) {
+    container.innerHTML = `<div class="bilan-empty">
+      <div style="font-size:32px;margin-bottom:10px;">📋</div>
+      <div>Aucun bilan enregistré pour l'instant.<br>En fin de mois, clique sur <strong>"Enregistrer le bilan mensuel"</strong>.</div>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = bilans.map(b => {
+    const allStats = { ...b.weekly, ...b.monthly };
+    const scoreColor = b.scoreGlobal >= 100 ? 'var(--success)' : b.scoreGlobal >= 60 ? 'white' : 'var(--warning)';
+
+    const statsHTML = Object.values(allStats).map(o => {
+      const p = Math.round(o.current / o.target * 100);
+      const cls = p >= 100 ? 'green' : p < 50 ? 'warn' : '';
+      return `<div class="bilan-stat">
+        <div class="bilan-stat-label">${o.label}</div>
+        <div class="bilan-stat-val">${o.current} <span>/ ${o.target}</span></div>
+        <div class="bilan-stat-pct ${cls}">${p}%</div>
+      </div>`;
+    }).join('');
+
+    const analyseHTML = (b.analyse || []).map(i => `
+      <div class="bilan-analyse-item">
+        <span>${i.icon}</span>
+        <span>${i.text}</span>
+      </div>`).join('');
+
+    return `<div class="bilan-fiche" id="bilan-${b.monthKey.replace(' ','-')}">
+      <div class="bilan-fiche-header">
+        <div>
+          <div class="bilan-fiche-title">${b.monthKey}</div>
+          <div class="bilan-fiche-date">Enregistré le ${b.date}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="bilan-fiche-score" style="color:${scoreColor}">${b.scoreGlobal}%<span> global</span></div>
+          <button class="pdf-btn" onclick="printBilan('${b.monthKey.replace(' ','-')}')">⬇️ PDF</button>
+        </div>
+      </div>
+      <div class="bilan-fiche-body">
+        <div class="bilan-grid">${statsHTML}</div>
+        ${analyseHTML ? `<div class="bilan-analyse">
+          <div class="bilan-analyse-title">Analyse</div>
+          ${analyseHTML}
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function printBilan(monthId) {
+  // Masquer toutes les fiches sauf celle à imprimer
+  const all = document.querySelectorAll('.bilan-fiche');
+  all.forEach(f => f.style.display = f.id === `bilan-${monthId}` ? '' : 'none');
+  window.print();
+  all.forEach(f => f.style.display = '');
+}
+// ── END BILANS ───────────────────────────────────────
+
+// ── SPORT ────────────────────────────────────────────
+const SEANCES = {
+  A: {
+    nom: 'Full Body A',
+    exercices: [
+      { id:'chest_press_inc', nom:'Chest press incliné',          muscle:'Pectoraux',          note:'Ou développé incliné à la smith machine',       series:2, reps:'8-12' },
+      { id:'presse_cuisse',   nom:'Presse à cuisse',              muscle:'Quads',             note:'Pieds au milieu/en haut',                      series:2, reps:'8-12' },
+      { id:'leg_curl',        nom:'Leg curl assis',               muscle:'Ischios',            note:'Tu peux ajouter les mollets en superset',       series:2, reps:'8-12' },
+      { id:'rowing_machine',  nom:'Rowing machine',               muscle:'Haut du dos',        note:'Coude ouvert',                                  series:2, reps:'8-12' },
+      { id:'elev_lat',        nom:'Élévation latérale',           muscle:'Deltoïde moyen',     note:'Assis ou debout contre un banc incliné à 70°',  series:2, reps:'8-12' },
+      { id:'curl_marteau',    nom:'Curl marteau poulie basse',    muscle:'Biceps',             note:'Corde ou haltères',                             series:2, reps:'8-12' },
+      { id:'overhead_tri',    nom:'Overhead triceps extension',   muscle:'Triceps',            note:'Corde',                                         series:2, reps:'8-12' },
+      { id:'crunch_a',        nom:'Crunch machine',               muscle:'Abdos',              note:'Ou poulie haute',                               series:2, reps:'8-12' },
+    ]
+  },
+  B: {
+    nom: 'Full Body B',
+    exercices: [
+      { id:'tirage_vert',     nom:'Tirage vertical',              muscle:'Grand dorsal',       note:'Tire tes coudes au niveau des hanches',         series:2, reps:'8-12' },
+      { id:'pec_fly',         nom:'Pec fly',                      muscle:'Pectoraux',          note:'Rapproche bien tes coudes en fin de mouvement', series:2, reps:'8-12' },
+      { id:'dev_militaire',   nom:'Développé militaire',          muscle:'Deltoïde antérieur', note:'Smith machine ou machine classique ou haltère', series:2, reps:'8-12' },
+      { id:'leg_ext',         nom:'Leg extension',                muscle:'Quads',              note:'',                                              series:2, reps:'8-12' },
+      { id:'adducteur',       nom:'Adducteur machine',            muscle:'Adducteur',          note:'Tu peux ajouter les mollets en superset',       series:2, reps:'8-12' },
+      { id:'tri_poulie',      nom:'Triceps extension poulie haute',muscle:'Triceps',           note:'Corde si possible',                             series:2, reps:'8-12' },
+      { id:'curl_pupitre',    nom:'Curl pupitre machine',         muscle:'Biceps',             note:'Ou classique',                                  series:2, reps:'8-12' },
+      { id:'crunch_b',        nom:'Crunch machine',               muscle:'Abdos',              note:'Ou poulie haute',                               series:2, reps:'8-12' },
+    ]
+  }
+};
+
+// Alternance ABA BAB : semaine paire → ABA, semaine impaire → BAB
+function getWeekNumber(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+}
+
+function getSeancesWeek(weekNum) {
+  // Semaine impaire → A B A, paire → B A B
+  return weekNum % 2 === 1 ? ['A','B','A'] : ['B','A','B'];
+}
+
+const SPORT_DAYS = ['Lundi','Mercredi','Vendredi'];
+const SPORT_DAYS_SHORT = ['Lun','Mer','Ven'];
+
+function getSportWeekKey(d) {
+  const wn = getWeekNumber(d);
+  const year = d.getFullYear();
+  return `sport-${year}-W${String(wn).padStart(2,'0')}`;
+}
+
+function initSportWeek() {
+  const now = new Date();
+  const key = getSportWeekKey(now);
+  if (!state.sport) state.sport = {};
+  if (!state.sport[key]) {
+    const wn = getWeekNumber(now);
+    const seances = getSeancesWeek(wn);
+    state.sport[key] = {
+      weekNum: wn,
+      seances: seances.map((type, i) => ({
+        day: SPORT_DAYS[i],
+        type,
+        done: false,
+        data: {} // { exId: { series: [{reps, charge, checked}] } }
+      }))
+    };
+    save();
+  }
+  return state.sport[key];
+}
+
+let sportActiveDayIdx = 0;
+let sportChart = null;
+
+function renderSport() {
+  const week = initSportWeek();
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=dim, 1=lun...5=ven
+
+  // Déterminer le jour actif par défaut
+  const dayMap = { 1:0, 3:1, 5:2 };
+  if (dayMap[dayOfWeek] !== undefined) sportActiveDayIdx = dayMap[dayOfWeek];
+
+  // Header
+  const todaySeance = week.seances[sportActiveDayIdx];
+  document.getElementById('sportSeanceName').textContent = SEANCES[todaySeance.type].nom;
+  document.getElementById('sportSeanceSub').textContent = `${todaySeance.day} — Semaine ${week.weekNum}`;
+  const doneCount = week.seances.filter(s => s.done).length;
+  document.getElementById('sportSeanceBadge').textContent = `${doneCount}/3`;
+
+  renderSportDayTabs(week);
+  renderSportSeance(week, sportActiveDayIdx);
+  renderSportProgSelect();
+  renderSportChart();
+  renderSportHistorique();
+}
+
+function renderSportDayTabs(week) {
+  const container = document.getElementById('sportDayTabs');
+  container.innerHTML = week.seances.map((s, i) => `
+    <button class="sport-day-tab ${i === sportActiveDayIdx ? 'active' : ''} ${s.done ? 'done' : ''}"
+      onclick="selectSportDay(${i})">
+      <div class="day-name">${SPORT_DAYS_SHORT[i]}</div>
+      <div class="day-seance">${s.type}</div>
+      <div class="day-status">${s.done ? '✓ Fait' : '—'}</div>
+    </button>`).join('');
+}
+
+function selectSportDay(idx) {
+  sportActiveDayIdx = idx;
+  const week = initSportWeek();
+  document.getElementById('sportSeanceName').textContent = SEANCES[week.seances[idx].type].nom;
+  document.getElementById('sportSeanceSub').textContent = `${week.seances[idx].day} — Semaine ${week.weekNum}`;
+  renderSportDayTabs(week);
+  renderSportSeance(week, idx);
+}
+
+function renderSportSeance(week, dayIdx) {
+  const seance = week.seances[dayIdx];
+  const program = SEANCES[seance.type];
+  const container = document.getElementById('sportSeanceContent');
+
+  container.innerHTML = program.exercices.map((ex, exIdx) => {
+    const exData = seance.data[ex.id] || { series: Array(ex.series).fill(null).map(() => ({ reps:'', charge:'', checked:false })) };
+    const seriesHTML = exData.series.map((s, sIdx) => `
+      <div class="sport-serie-row">
+        <div class="sport-serie-num">${sIdx+1}</div>
+        <input class="sport-serie-input" type="number" placeholder="${ex.reps}" value="${s.reps}"
+          onchange="updateSerie('${ex.id}',${sIdx},'reps',this.value)" inputmode="numeric">
+        <input class="sport-serie-input" type="number" placeholder="kg" value="${s.charge}"
+          onchange="updateSerie('${ex.id}',${sIdx},'charge',this.value)" inputmode="decimal">
+        <div class="sport-serie-check ${s.checked ? 'done' : ''}" onclick="toggleSerie('${ex.id}',${sIdx})">
+          ${s.checked ? '✓' : ''}
+        </div>
+      </div>`).join('');
+
+    return `<div class="sport-exercice-card">
+      <div class="sport-ex-header" onclick="toggleExCard('ex-body-${dayIdx}-${exIdx}', this)">
+        <div class="sport-ex-info">
+          <div class="sport-ex-name">${ex.nom}</div>
+          <div class="sport-ex-muscle">${ex.muscle} · ${ex.series}×${ex.reps}</div>
+          ${ex.note ? `<div class="sport-ex-note">${ex.note}</div>` : ''}
+        </div>
+        <div class="sport-ex-chevron" id="chev-${dayIdx}-${exIdx}">▼</div>
+      </div>
+      <div class="sport-ex-body" id="ex-body-${dayIdx}-${exIdx}">
+        <div class="sport-series-header">
+          <div>Série</div><div>Reps</div><div>Charge</div><div>✓</div>
+        </div>
+        ${seriesHTML}
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML += `<button class="sport-save-btn" onclick="saveSportSeance()">
+    💾 Enregistrer la séance ${seance.done ? '(mise à jour)' : ''}
+  </button>`;
+}
+
+function toggleExCard(bodyId, header) {
+  const body = document.getElementById(bodyId);
+  const chev = header.querySelector('.sport-ex-chevron');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function updateSerie(exId, sIdx, field, value) {
+  const week = initSportWeek();
+  const seance = week.seances[sportActiveDayIdx];
+  const ex = SEANCES[seance.type].exercices.find(e => e.id === exId);
+  if (!seance.data[exId]) {
+    seance.data[exId] = { series: Array(ex.series).fill(null).map(() => ({ reps:'', charge:'', checked:false })) };
+  }
+  seance.data[exId].series[sIdx][field] = value;
+  save();
+}
+
+function toggleSerie(exId, sIdx) {
+  const week = initSportWeek();
+  const seance = week.seances[sportActiveDayIdx];
+  const ex = SEANCES[seance.type].exercices.find(e => e.id === exId);
+  if (!seance.data[exId]) {
+    seance.data[exId] = { series: Array(ex.series).fill(null).map(() => ({ reps:'', charge:'', checked:false })) };
+  }
+  seance.data[exId].series[sIdx].checked = !seance.data[exId].series[sIdx].checked;
+  save();
+  renderSportSeance(week, sportActiveDayIdx);
+}
+
+function saveSportSeance() {
+  const week = initSportWeek();
+  week.seances[sportActiveDayIdx].done = true;
+  save();
+  renderSport();
+  alert(`✅ Séance ${week.seances[sportActiveDayIdx].type} enregistrée !`);
+}
+
+// ── GRAPHIQUE PROGRESSION ──
+function renderSportProgSelect() {
+  const select = document.getElementById('sportProgSelect');
+  if (!select) return;
+  const allExos = [...SEANCES.A.exercices, ...SEANCES.B.exercices];
+  select.innerHTML = allExos.map(e => `<option value="${e.id}">${e.nom}</option>`).join('');
+}
+
+function renderSportChart() {
+  const select = document.getElementById('sportProgSelect');
+  if (!select) return;
+  const exId = select.value;
+
+  // Collecter toutes les données historiques pour cet exercice
+  const points = [];
+  Object.entries(state.sport || {}).forEach(([key, week]) => {
+    week.seances.forEach(s => {
+      if (s.done && s.data[exId]) {
+        const series = s.data[exId].series;
+        const maxCharge = Math.max(...series.map(s => parseFloat(s.charge) || 0));
+        const totalVol = series.reduce((sum, s) => sum + (parseFloat(s.reps)||0) * (parseFloat(s.charge)||0), 0);
+        if (maxCharge > 0 || totalVol > 0) {
+          points.push({ label: `S${week.weekNum} ${s.day.substring(0,3)}`, maxCharge, totalVol });
+        }
+      }
+    });
+  });
+
+  const canvas = document.getElementById('sportChart');
+  if (!canvas) return;
+
+  if (sportChart) { sportChart.destroy(); sportChart = null; }
+
+  if (points.length === 0) {
+    canvas.parentElement.innerHTML += '';
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#9E8E80';
+    ctx.font = '13px DM Sans';
+    ctx.textAlign = 'center';
+    ctx.fillText('Aucune donnée encore — enregistre ta première séance !', canvas.width/2, 60);
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  sportChart = new Chart(ctx, {
+    data: {
+      labels: points.map(p => p.label),
+      datasets: [
+        {
+          type: 'line', label: 'Charge max (kg)',
+          data: points.map(p => p.maxCharge),
+          borderColor: '#7D6249', backgroundColor: 'rgba(125,98,73,0.1)',
+          tension: 0.3, pointRadius: 5, pointBackgroundColor: '#7D6249',
+          yAxisID: 'y', fill: true,
+        },
+        {
+          type: 'line', label: 'Volume total (kg)',
+          data: points.map(p => p.totalVol),
+          borderColor: '#A8896C', backgroundColor: 'rgba(168,137,108,0.08)',
+          tension: 0.3, pointRadius: 4, pointBackgroundColor: '#A8896C',
+          borderDash: [5,3], yAxisID: 'y2',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { labels: { font:{ family:'DM Sans', size:11 }, color:'#7D6249' } }
+      },
+      scales: {
+        y:  { position:'left',  ticks:{ font:{family:'DM Sans',size:10}, color:'#9E8E80' }, grid:{color:'rgba(0,0,0,0.04)'} },
+        y2: { position:'right', ticks:{ font:{family:'DM Sans',size:10}, color:'#A8896C' }, grid:{display:false} },
+        x:  { ticks:{ font:{family:'DM Sans',size:10}, color:'#9E8E80' }, grid:{display:false} }
+      }
+    }
+  });
+}
+
+function renderSportHistorique() {
+  const container = document.getElementById('sportHistorique');
+  if (!container) return;
+  const weeks = Object.entries(state.sport || {}).reverse();
+  if (weeks.length === 0) { container.innerHTML = ''; return; }
+
+  container.innerHTML = `<div class="section-header"><span class="section-title">Historique séances</span><div class="section-line"></div></div>` +
+    weeks.map(([key, week]) => {
+      const doneSeances = week.seances.filter(s => s.done);
+      if (doneSeances.length === 0) return '';
+      return `<div class="hist-row">
+        <div class="hist-row-header">
+          <div><div class="hist-week-name">Semaine ${week.weekNum}</div></div>
+          <div style="font-size:12px;color:var(--muted)">${doneSeances.length}/3 séances</div>
+        </div>
+        ${doneSeances.map(s => {
+          const prog = SEANCES[s.type];
+          return `<div style="padding:8px 0;border-bottom:1px solid var(--beige);font-size:12px;">
+            <div style="font-weight:600;color:var(--brown);margin-bottom:5px;">${s.day} — ${prog.nom}</div>
+            ${prog.exercices.map(ex => {
+              const d = s.data[ex.id];
+              if (!d) return '';
+              const charges = d.series.map(s => s.charge ? `${s.reps||'?'}×${s.charge}kg` : '').filter(Boolean);
+              if (!charges.length) return '';
+              return `<div style="color:var(--muted);margin-bottom:2px;">${ex.nom} : ${charges.join(' / ')}</div>`;
+            }).join('')}
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).filter(Boolean).join('');
+}
+// ── END SPORT ─────────────────────────────────────────
+
+// MIGRATION
+function migrate() {
+  if (state.weekly.biens) state.weekly.biens.label = 'Biens trouvés';
+  state.habits = state.habits.filter(h => !h.name.includes('ditation') && h.id !== 'lecture');
+  state.habits.forEach(h => {
+    if (h.id === 'sport') h.target = 3;
+  });
+  save();
+}
+migrate();
+// INIT
+checkReset();
+renderAll();
+</script>
+</body>
+</html>
