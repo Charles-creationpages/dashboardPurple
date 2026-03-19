@@ -302,6 +302,21 @@ body {
   </div>
 </nav>
 
+<!-- POPUP R1 SEMAINE -->
+<div id="r1PopupOverlay" style="display:none;position:fixed;inset:0;background:rgba(44,32,24,0.45);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:16px;padding:28px 24px;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <div style="font-family:'Lora',serif;font-size:20px;color:var(--brown);margin-bottom:8px;">Nouvelle semaine 👋</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;">Combien de <strong style="color:var(--brown)">R1 sont fixés</strong> pour cette semaine ?</div>
+    <input id="r1PopupInput" type="number" min="0" placeholder="ex: 3"
+      style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:18px;text-align:center;background:var(--bg);color:var(--text);margin-bottom:16px;"
+      onkeydown="if(event.key==='Enter')confirmR1Popup()">
+    <button onclick="confirmR1Popup()"
+      style="width:100%;padding:13px;background:var(--brown);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">
+      Confirmer
+    </button>
+  </div>
+</div>
+
 <!-- DASHBOARD -->
 <div id="view-dashboard" class="view active">
   <div class="dash-header">
@@ -562,9 +577,45 @@ function pct(cur, tar) { if (!tar || tar === 0) return 0; return Math.round(cur 
 function colorClass(p) { return p >= 100 ? 'green' : p < 50 ? 'warn' : ''; }
 function barWidth(p) { return Math.min(100, p); }
 
-// R2 target = nombre de R1 pris (objectif : transformer 100% des R1)
-function getR2Target() { return state.weekly.r1.current || state.weekly.r1.target; }
+// R2 target = R1 fixés déclarés en début de semaine
+function getR2Target() { return state.weeklyR1Fixes || 0; }
 function getEffectiveTarget(k, o) { return (k === 'r2' && o.dynamicTarget) ? getR2Target() : o.target; }
+
+// ── POPUP R1 FIXÉS ───────────────────────────────────
+function checkR1Popup() {
+  const now = new Date();
+  const wk = getWeekKey(now);
+  const isMonday = now.getDay() === 1;
+  // Afficher si : lundi OU pas encore répondu cette semaine
+  if ((isMonday || !state.r1PopupWeek) && state.r1PopupWeek !== wk) {
+    const overlay = document.getElementById('r1PopupOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      setTimeout(() => document.getElementById('r1PopupInput')?.focus(), 100);
+    }
+  }
+}
+
+function confirmR1Popup() {
+  const input = document.getElementById('r1PopupInput');
+  const val = parseInt(input?.value) || 0;
+  const wk = getWeekKey(new Date());
+
+  // Sauvegarder le nombre de R1 fixés pour cette semaine
+  state.weeklyR1Fixes = val;
+  state.r1PopupWeek = wk;
+
+  // Stocker dans l'historique R1 fixés pour suivi long terme
+  state.r1FixesHistory = state.r1FixesHistory || [];
+  const existing = state.r1FixesHistory.findIndex(e => e.week === wk);
+  if (existing >= 0) state.r1FixesHistory[existing].r1Fixes = val;
+  else state.r1FixesHistory.unshift({ week: wk, r1Fixes: val, date: new Date().toLocaleDateString('fr-FR') });
+
+  save();
+  document.getElementById('r1PopupOverlay').style.display = 'none';
+  renderAll();
+}
+// ── END POPUP ────────────────────────────────────────
 
 function renderDashKPIs() {
   const g = document.getElementById('dashKpiGrid');
@@ -575,12 +626,14 @@ function renderDashKPIs() {
     const c = colorClass(p);
 
     if (k === 'r2' && o.dynamicTarget) {
-      const r1count = state.weekly.r1.current;
+      const r1Fixes = state.weeklyR1Fixes || 0;
+      const p = pct(o.current, r1Fixes);
+      const c = colorClass(p);
       return `<div class="kpi-card">
         <div class="kpi-accent ${c}"></div>
         <div class="kpi-label">${o.label}</div>
         <div class="kpi-value">${p}<span>%</span></div>
-        <div class="kpi-sub">${r1count === 0 ? 'En attente de R1' : `${p}% de transformation`}</div>
+        <div class="kpi-sub">${r1Fixes === 0 ? 'R1 fixés non renseignés' : `${o.current} R2 sur ${r1Fixes} R1 fixés`}</div>
         <div class="progress-bar"><div class="progress-fill ${c}" style="width:${barWidth(p)}%"></div></div>
       </div>`;
     }
@@ -1760,6 +1813,7 @@ function migrate() {
 migrate();
 // INIT
 checkReset();
+checkR1Popup();
 renderAll();
 </script>
 </body>
