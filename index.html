@@ -362,6 +362,17 @@ body {
       </div>
       <button class="reset-btn" onclick="resetWeek()">↺ Reset semaine</button>
     </div>
+    <div class="obj-item" style="background:var(--beige);border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+      <div>
+        <div class="obj-name">📋 R1 fixés pour la semaine</div>
+        <div class="obj-target" style="color:var(--taupe);">Base du taux de transformation R2 — enregistré en fin de semaine</div>
+      </div>
+      <div class="obj-counter">
+        <button class="counter-btn" onclick="updateR1Fixes(-1)">−</button>
+        <div class="counter-display" id="r1FixesDisplay">0</div>
+        <button class="counter-btn" onclick="updateR1Fixes(1)">+</button>
+      </div>
+    </div>
     <div id="weeklyObjItems"></div>
   </div>
   <button class="save-week-btn" onclick="saveWeekAnalysis()">
@@ -747,6 +758,8 @@ function renderObjectifs() {
   const now = new Date();
   if (wl) wl.textContent = getWeekKey(now);
   if (ml) ml.textContent = `${MONTHS_FR[now.getMonth()]} ${now.getFullYear()}`;
+  const r1FixesEl = document.getElementById('r1FixesDisplay');
+  if (r1FixesEl) r1FixesEl.textContent = state.weeklyR1Fixes || 0;
   if (wi) wi.innerHTML = Object.entries(state.weekly).map(([k,o]) => {
     const tar = getEffectiveTarget(k, o);
     const p = pct(o.current, tar);
@@ -785,6 +798,14 @@ function renderObjectifs() {
   }).join('');
 }
 
+function updateR1Fixes(delta) {
+  state.weeklyR1Fixes = Math.max(0, (state.weeklyR1Fixes || 0) + delta);
+  save();
+  const el = document.getElementById('r1FixesDisplay');
+  if (el) el.textContent = state.weeklyR1Fixes;
+  renderDashKPIs();
+}
+
 function updateCounter(period, key, delta) {
   state[period][key].current = Math.max(0, state[period][key].current + delta);
   save(); renderAll();
@@ -794,6 +815,8 @@ function resetWeek() {
   if (confirm('Remettre les compteurs hebdomadaires à 0 ?')) {
     Object.keys(state.weekly).forEach(k => state.weekly[k].current = 0);
     state.habits.forEach(h => h.days = [0,0,0,0,0,0,0]);
+    state.weeklyR1Fixes = 0;
+    state.r1PopupWeek = null;
     save(); renderAll();
   }
 }
@@ -1196,9 +1219,16 @@ function saveWeekAnalysis() {
     date: new Date().toLocaleDateString('fr-FR'),
     weekly: JSON.parse(JSON.stringify(state.weekly)),
     habits: JSON.parse(JSON.stringify(state.habits)),
+    r1Fixes: state.weeklyR1Fixes || 0,
     analyse: analyseMetier(state.weekly),
     analyseMonthly: analyseMonthly(state.monthly),
   };
+
+  // Enregistrer définitivement dans l'historique R1 fixés
+  state.r1FixesHistory = state.r1FixesHistory || [];
+  const existingR1 = state.r1FixesHistory.findIndex(e => e.week === weekKey);
+  if (existingR1 >= 0) state.r1FixesHistory[existingR1].r1Fixes = snap.r1Fixes;
+  else state.r1FixesHistory.unshift({ week: weekKey, r1Fixes: snap.r1Fixes, date: snap.date });
 
   state.history = state.history || [];
   state.history.unshift(snap);
