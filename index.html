@@ -1109,9 +1109,9 @@ function renderStats() {
 }
 
 // ── ANALYSE MÉTIER ─────────────────────────────────
-function analyseMetier(weekly) {
+function analyseMetier(weekly, r1Fixes) {
   const items = [];
-  const r2Target = weekly.r1 ? weekly.r1.current : 0;
+  const r2Target = (r1Fixes !== undefined) ? r1Fixes : (state.weeklyR1Fixes || 0);
   const r1  = weekly.r1    ? Math.round(weekly.r1.current    / weekly.r1.target    * 100) : 0;
   const r2  = (weekly.r2 && r2Target > 0) ? Math.round(weekly.r2.current / r2Target * 100) : (weekly.r2?.current > 0 ? 100 : 0);
   const ag  = weekly.agents? Math.round(weekly.agents.current/ weekly.agents.target* 100) : 0;
@@ -1220,7 +1220,7 @@ function saveWeekAnalysis() {
     weekly: JSON.parse(JSON.stringify(state.weekly)),
     habits: JSON.parse(JSON.stringify(state.habits)),
     r1Fixes: state.weeklyR1Fixes || 0,
-    analyse: analyseMetier(state.weekly),
+    analyse: analyseMetier(state.weekly, state.weeklyR1Fixes || 0),
     analyseMonthly: analyseMonthly(state.monthly),
   };
 
@@ -1436,7 +1436,7 @@ function saveMonthBilan() {
   // Analyse mensuelle
   const analyse = analyseMonthly(state.monthly);
   // Ajouter analyse hebdo cumulée
-  const analyseHebdo = analyseMetier(state.weekly);
+  const analyseHebdo = analyseMetier(state.weekly, state.weeklyR1Fixes || 0);
 
   const bilan = {
     monthKey,
